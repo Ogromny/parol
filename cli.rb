@@ -9,10 +9,9 @@ puts "#####################"
 def command cmd
 
     case cmd
-    when ":info"
-        info
-    when ":exit"
-        exit
+    when ":info"; info
+    when ":github"; github
+    when ":exit"; exit
     end
 
 end
@@ -23,11 +22,16 @@ def info
     puts "Core::Parols_IO #{Parol::PAROLS_IO_VERSION}"
 end
 
+def github
+    system "xdg-open https://github.com/Ogromny/parol"
+end
+
 while true
 
     puts ""
     puts "Commands:"
     puts "  :info     Get info"
+    puts "  :github     Open Github page of Parol"
     puts "  :exit     Exit"
     puts ""
 
