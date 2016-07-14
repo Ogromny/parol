@@ -124,27 +124,34 @@ module Parol
     # this class if used for write/read parols database
     class Parols_IO
 
+        attr_accessor :filename
+
         # Constructor
         #
         # @param [String] the path of the parols database
-        def initialize filename = "/home/ogromny/lettre_motivation.txt"
+        def initialize filename = ""
             @filename = filename
         end
 
         # read
         #
-        # @return [String] content of @filename
+        # @return [String, Boolean] content of @filename or false
         def read
-            file = File.new @filename, "r"
-            content = String.new
+            begin
+                file = File.new @filename, "r"
+                content = String.new
 
-            while line = file.gets
-                content += line
+                while line = file.gets
+                    content += line
+                end
+
+                file.close
+
+                return content
+            rescue Exception => error
+                puts error
+                return false
             end
-
-            file.close
-
-            content
         end
 
         # write
