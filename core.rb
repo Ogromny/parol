@@ -94,9 +94,13 @@ module Parol
         # Add Parol instance in @parols
         #
         # @param parol [Parol] take an instance of Parol
-        # @return [Parols] for avoir Nil classe
+        # @return [Parols, Boolean] false if parol is not Parol
         def + parol
-            @parols.push parol
+            if parol.is_a? Parol
+                @parols.push parol
+            else
+                return false
+            end
             self
         end
 
@@ -156,13 +160,3 @@ module Parol
     end
 
 end
-
-parols = Parol::Parols.new
-parol = Parol::Parol.new "www.duckduckgo.com", "ogromny", "admin", "dick"
-parol1 = Parol::Parol.new "www.pornhub.com", "ogromny", "admin", "dick"
-parol2 = Parol::Parol.new "www.dicked.com", "ogromny", "admin", "dick"
-parols += parol
-parols += parol1
-parols += parol2
-io = Parol::Parols_IO.new "dick.txt"
-io.write parols.to_s
