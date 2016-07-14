@@ -7,12 +7,14 @@ require 'aes'
 # Module Parol contains class: Parol, Parols, Parols_IO
 module Parol
 
-    PAROL_VERSION = "1.0.0"
-    PAROLS_VERSION = "1.0.0"
-    PAROLS_IO_VERSION = "1.0.0"
+    PAROL_VERSION = "1.2.0"
+    PAROLS_VERSION = "1.2.0"
+    PAROLS_IO_VERSION = "1.2.0"
 
     # This class represents an entry
     class Parol
+
+        attr_accessor :url, :username, :password, :encrypted
 
         # for future change of delimiter
         BEGIN_PAROL = "=begin"
@@ -23,44 +25,12 @@ module Parol
         # @param url [String] the Url, Link, Address
         # @param username [string] the pseudo, user, name, email, ...
         # @param password [string] the password of username
-        # @param encrypt_password [string] the password for the encryption
         # @param encrypted [Boolean] false if not encrypted, true if encrypted
-        def initialize url = "", username = "", password = "", encrypt_password = "", encrypted = false
+        def initialize url = "", username = "", password = "",  encrypted = false
             @url              = url
             @username         = username
             @password         = password
-            @encrypt_password = encrypt_password
             @encrypted        = encrypted
-        end
-
-        # ncrypt!
-        #
-        # If @encrypted is true nothing append
-        # Else:
-        #   Encrypt in AES @url, @username and @password with @encrypt_password
-        #   Set @encrypted true to avoid second encryption
-        def ncrypt!
-            unless @encrypted
-                @url       = AES.encrypt @url, @encrypt_password
-                @username  = AES.encrypt @username, @encrypt_password
-                @password  = AES.encrypt @password, @encrypt_password
-                @encrypted = true
-            end
-        end
-
-        # dcrypt!
-        #
-        # If @encrypted is false nothing append
-        # Else:
-        #   Decrypt @url, @username and @password with @encrypt_password
-        #   Set @encrypt false to avoid second decryption
-        def dcrypt!
-            if @encrypted
-                @url       = AES.decrypt @url, @encrypt_password
-                @username  = AES.decrypt @username, @encrypt_password
-                @password  = AES.decrypt @password, @encrypt_password
-                @encrypted = false
-            end
         end
 
         # to_s
@@ -74,13 +44,6 @@ module Parol
             "#{END_PAROL}"
         end
 
-        # is_ncrypted?
-        #
-        # @return [Boolean]
-        def is_ncrypted?
-            @encrypted
-        end
-
     end
 
     # This class stock all Parol in 1
@@ -89,8 +52,10 @@ module Parol
         # Constructor
         #
         # Make an array @parols
-        def initialize
-            @parols = Array.new
+        # @param encrypt_password [string] the password for the encryption
+        def initialize encrypt_password = ""
+            @parols           = Array.new
+            @encrypt_password = encrypt_password
         end
 
         # +
@@ -108,6 +73,30 @@ module Parol
             self
         end
 
+        # RW NEEDED
+        def ncrypt!
+            @parols.each do |parol|
+                unless parol.encrypted
+                    parol.url       = AES.encrypt parol.url, @encrypt_password
+                    parol.username  = AES.encrypt parol.username, @encrypt_password
+                    parol.password  = AES.encrypt parol.password, @encrypt_password
+                    parol.encrypted = true
+                end
+            end
+        end
+
+        # RW NEEDED
+        def dcrypt!
+            @parols.each do |parol|
+                if parol.encrypted
+                    parol.url       = AES.decrypt parol.url, @encrypt_password
+                    parol.username  = AES.decrypt parol.username, @encrypt_password
+                    parol.password  = AES.decrypt parol.password, @encrypt_password
+                    parol.encrypted = false
+                end
+            end
+        end
+
         # to_s
         #
         # Check if all Parol in @parols is_ncrypted?
@@ -115,12 +104,18 @@ module Parol
         #
         # @return [String] of all Parol.to_s in one String
         def to_s
+            s = String.new
+            i = 0
             @parols.each do |parol|
-                unless parol.is_ncrypted?
-                    parol.ncrypt!
-                end
-                parol.to_s
+                # unless parol.encrypted; ncrypt!; end
+                s +=  "[#{i}] #{parol.to_s}\n"
+                i += 1
             end
+            return s
+        end
+
+        def rm index
+            @parols.delete_at index
         end
 
     end
