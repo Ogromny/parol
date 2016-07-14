@@ -146,7 +146,6 @@ module Parol
                 end
 
                 file.close
-
                 return content
             rescue Exception => error
                 puts error
@@ -157,12 +156,17 @@ module Parol
         # write
         #
         # @param [String] Parols.to_s generaly
+        # @return [Boolean] true if succed, false if failed
         def write parols
-            file = File.new @filename, "w"
-
-            file.puts parols
-
-            file.close
+            begin
+                file = File.new @filename, "w"
+                file.puts parols
+                file.close
+                return true
+            rescue Exception => error
+                puts error
+                return false
+            end
         end
     end
 
