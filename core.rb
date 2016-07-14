@@ -1,3 +1,7 @@
+######################
+# Version: 1.0 Alpha #
+######################
+
 # This file is called core.rb
 # It contains the module Parol
 
