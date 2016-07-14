@@ -1,7 +1,3 @@
-######################
-# Version: 1.0 Alpha #
-######################
-
 # This file is called core.rb
 # It contains the module Parol
 
@@ -10,6 +6,10 @@ require 'aes'
 
 # Module Parol contains class: Parol, Parols, Parols_IO
 module Parol
+
+    PAROL_VERSION = "1.0.0"
+    PAROLS_VERSION = "1.0.0"
+    PAROLS_IO_VERSION = "1.0.0"
 
     # This class represents an entry
     class Parol
