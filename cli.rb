@@ -27,23 +27,18 @@ module Parol
 
                 @cmd = gets.chomp.to_s
 
-                system "clear" # tmp
+                system "clear"
 
                 case @cmd
-                    when ":read_only", ":ro"
-                        CLI_RO.new.main
+                    when ":read_only", ":ro"; CLI_RO.new.main
 
-                    when ":write", ":w"
-                        CLI_W.new.main
+                    when ":write", ":w"; CLI_W.new.main
 
-                    when ":info", ":i"
-                        info
+                    when ":info", ":i"; info
 
-                    when ":github", ":gh"
-                        github
+                    when ":github", ":gh"; github
 
-                    when ":exit", ":q"
-                        exit
+                    when ":exit", ":q"; exit
                 end
 
             end
@@ -64,8 +59,7 @@ module Parol
     class CLI_RO
 
         def initialize
-            @content = String.new
-            @cmd     = String.new
+            @cmd = String.new
         end
 
         def main
@@ -80,23 +74,22 @@ module Parol
 
                 @cmd = gets.chomp.to_s
 
-                system "clear" # tmp
+                system "clear"
 
                 case @cmd
                     when ":open", ":o"
-                        # print Rainbow("DB filename: ").silver; filename = gets.chomp.to_s
-                        # file = Parols_IO.new filename
-                        file = Parols_IO.new "parols.db"
-                        @content = file.read
-                        parols = Parols.new("admin").from_db @content
-                        parols.dcrypt!
-                        puts parols.to_s
+                        print Rainbow("DB filename: ").silver; file = Parols_IO.new gets.chomp.to_s
 
-                    when ":decrypt", ":d"
+                        print Rainbow("DB password: ").silver; password = gets.chomp.to_s
 
+                        @parols = Parols.new(password).from_db file.read
 
-                    when ":exit", ":q"
-                        break
+                    when ":decrypt", ":d"; @parols.dcrypt!
+
+                    when ":ls", ":l"; puts @parols.to_s true
+
+                    when ":exit", ":q"; break
+
                 end
 
             end
@@ -108,8 +101,9 @@ module Parol
     class CLI_W
 
         def initialize
-            @parols = Parols.new
-            @cmd    = String.new
+            @parols           = Parols.new
+            @cmd              = String.new
+            @encrypt_password = String.new
         end
 
         def main
@@ -142,12 +136,23 @@ module Parol
                         @parols.rm index
 
                     when ":ls", ":l"
-                        puts Rainbow(@parols.to_s).silver
+                        puts Rainbow(@parols.to_s true).silver
 
                     when ":encrypt", ":e"
-                        print Rainbow("The password for encrypt: ").silver; encrypt_password = gets.chomp.to_s
-                        @parols.encrypt_password = encrypt_password
-                        @parols.ncrypt!
+                        if @encrypt_password == ""
+                            print Rainbow("The password for encrypt: ").silver; @encrypt_password = gets.chomp.to_s
+                            if @encrypt_password == ""
+                                print Rainbow("Please enter a password").silver
+                            else
+                                @parols.encrypt_password = @encrypt_password
+                                @parols.ncrypt!
+                                @encrypted = true
+                            end
+                        else
+                            @parols.encrypt_password = @encrypt_password
+                            @parols.ncrypt!
+                            @encrypted = true
+                        end
 
                     when ":save", ":s"
                         print Rainbow("Enter the path for db: ").silver; path_db = gets.chomp.to_s
