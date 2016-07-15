@@ -7,9 +7,9 @@ require 'aes'
 # Module Parol contains class: Parol, Parols, Parols_IO
 module Parol
 
-    PAROL_VERSION = "1.2.0"
-    PAROLS_VERSION = "1.2.0"
-    PAROLS_IO_VERSION = "1.2.0"
+    PAROL_VERSION = "1.8.5"
+    PAROLS_VERSION = "1.8.5"
+    PAROLS_IO_VERSION = "1.8.5"
 
     # This class represents an entry
     class Parol
@@ -36,10 +36,7 @@ module Parol
         #
         # @return [String]
         def to_s
-            "#{BEGIN_PAROL}" +
-            "@url=#{@url}" +
-            "@username=#{@username}" +
-            "@password=#{@password}"
+            "#{BEGIN_PAROL}@url=#{@url}@username=#{@username}@password=#{@password}"
         end
 
     end
@@ -65,15 +62,14 @@ module Parol
         # @param parol [Parol] take an instance of Parol
         # @return [Parols, Boolean] false if parol is not Parol
         def + parol
-            if parol.is_a? Parol
-                @parols.push parol
-            else
-                return false
-            end
-            self
+            @parols.push parol; self
         end
 
-        # RW NEEDED
+        # ncrypt!
+        #
+        # Crypt all Parol in @parols
+        #
+        # @return [Parols] self
         def ncrypt!
             @parols.each do |parol|
                 unless parol.encrypted
@@ -83,9 +79,14 @@ module Parol
                     parol.encrypted = true
                 end
             end
+            self
         end
 
-        # RW NEEDED
+        # dcrypt!
+        #
+        # Decrypt all Parol in @parols
+        #
+        # @return [Parols] self
         def dcrypt!
             @parols.each do |parol|
                 if parol.encrypted
@@ -95,6 +96,7 @@ module Parol
                     parol.encrypted = false
                 end
             end
+            self
         end
 
         # to_s
@@ -103,21 +105,29 @@ module Parol
         #   If a Parol isn't ncrypted, ncrypt! it
         #
         # @return [String] of all Parol.to_s in one String
-        def to_s
-            s = String.new
-            @parols.each { |parol| s += parol.to_s }
-            s
+        def to_s ls_mod = false
+            if ls_mod
+                i = 0
+                s = String.new; @parols.each { |parol| s += "[#{i}] #{parol.to_s}\n"; i += 1 }; s
+            else
+                s = String.new; @parols.each { |parol| s += parol.to_s }; s
+            end
         end
 
         # rm
         #
         # Delete Parol in @parols at index
         # @param [Integer] index
+        # @return [Parols] self
         def rm index
-            @parols.delete_at index
+            @parols.delete_at index; self
         end
 
-
+        # from_db
+        #
+        # Add all Parol from db_content with +
+        # @param [String] the content of the db file
+        # @return [Parols] self
         def from_db db_content
             db_content = db_content.split "=begin"; db_content.delete_at 0
 
@@ -130,8 +140,6 @@ module Parol
 
                 self.+ Parol.new(data_of_db[index][0], data_of_db[index][1], data_of_db[index][2], true)
             end
-
-            puts @parols.to_s
 
             self
         end
@@ -152,38 +160,21 @@ module Parol
 
         # read
         #
-        # @return [String, Boolean] content of @filename or false
+        # @return [String] content of @filename
         def read
-            begin
-                file = File.new @filename, "r"
-                content = String.new
+            file = File.new @filename, "r"; content = String.new
 
-                while line = file.gets
-                    content += line
-                end
+            while line = file.gets; content += line; end
 
-                file.close
-                return content
-            rescue Exception => error
-                puts error
-                return false
-            end
+            file.close; content
         end
 
         # write
         #
         # @param [String] Parols.to_s generaly
-        # @return [Boolean] true if succed, false if failed
         def write parols
-            begin
-                file = File.new @filename, "w"
-                file.puts parols
-                file.close
-                return true
-            rescue Exception => error
-                puts error
-                return false
-            end
+            file = File.new @filename, "w"; file.puts parols; file.close
+            true
         end
     end
 
