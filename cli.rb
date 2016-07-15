@@ -1,111 +1,116 @@
 require_relative "core.rb"
+require "rainbow"
 
-cmd = String.new
+module Parol
 
-puts "#####################"
-puts "# PAROL CLI Version #"
-puts "#####################"
+    class CLI
 
-def command cmd
+        def initialize
+            puts Rainbow("#####################").magenta
+            puts Rainbow("#").magenta + Rainbow(" PAROL ").indianred + Rainbow("CLI Version ").green + Rainbow("#").magenta
+            puts Rainbow("#####################").magenta
 
-    case cmd
-    when ":read_only"; read_only
-    when ":read_write"; read_write
-    when ":write"; write
-    when ":info"; info
-    when ":github"; github
-    when ":exit"; exit
-    end
-
-end
-
-def write
-
-    parols = Parol::Parols.new
-
-    while true
-        puts "      :add            Add"
-        puts "      :rm             Remove"
-        puts "      :ls             List"
-        puts "      :encrypt        Encrypt"
-        puts "      :save           Save"
-        puts "      :exit           Back to main menu"
-        puts ""
-
-        cmd = gets.chomp
-
-        case cmd
-        when ":add"
-            print "Url, Link, Address: "
-            url = gets.chomp.to_s
-            print "Pseudo, User, Name, Email: "
-            username = gets.chomp.to_s
-            print "Password: "
-            password = gets.chomp.to_s
-
-            parols += Parol::Parol.new url, username, password
-        when ":rm"
-            print "Index ?: "
-            index = gets.chomp.to_i # fix nothing
-            deleted = parols.rm index
-            unless deleted == nil
-                print "Deleted #{deleted}\n"
-            else
-                print "Not in range\n"
-            end
-        when ":ls"
-            puts parols.to_s
-        when ":encrypt"
-            parols.ncrypt!
-        when ":save"
-            print "Enter the path for db: "
-            path_db = gets.chomp.to_s
-            parols_io = Parol::Parols_IO.new path_db
-            parols_io.write parols
-        when ":exit"; break
+            @cmd = String.new
         end
+
+        def main
+            while true
+                puts Rainbow("\nCommands:").red.underline
+                # puts Rainbow("  :read_only,  :ro").blue + "    Read a parol db file without modifying it"
+                # puts Rainbow("  :read_write, :rw").blue + "    Read a parol db file and edit it"
+                puts Rainbow("  :write,      :w ").blue  + "    Make a new parol db file"
+                puts Rainbow("  :info,       :i ").blue  + "    Get info"
+                puts Rainbow("  :github,     :gh").blue + "    Open Github page of Parol"
+                puts Rainbow("  :exit,       :q ").blue  + "    Exit\n"
+
+                @cmd = gets.chomp.to_s
+
+                system "clear" # tmp
+
+                case @cmd
+                    when ":write", ":w"
+                        CLI_W.new.main
+                    when ":info", ":i"
+                        info
+
+                    when ":github", ":gh"
+                        github
+
+                    when ":exit", ":q"
+                        exit
+                end
+
+            end
+        end
+
+        def info
+            puts Rainbow("Core::Parol    ").yellow + Rainbow(" #{PAROL_VERSION}").silver
+            puts Rainbow("Core::Parols   ").yellow + Rainbow(" #{PAROLS_VERSION}").silver
+            puts Rainbow("Core::Parols_IO").yellow + Rainbow(" #{PAROLS_IO_VERSION}").silver
+        end
+
+        def github
+            system "xdg-open https://github.com/Ogromny/parol"
+        end
+
+    end
+
+    class CLI_W
+
+        def initialize
+            @parols = Parols.new
+            @cmd    = String.new
+        end
+
+        def main
+            while true
+                puts Rainbow("\nCommands:").red.underline
+                puts Rainbow("      :add,     :a").blue + "    Add"
+                puts Rainbow("      :rm,      :r").blue + "    Remove"
+                puts Rainbow("      :ls,      :l").blue + "    List"
+                puts Rainbow("      :encrypt, :e").blue + "    Encrypt"
+                puts Rainbow("      :save,    :s").blue + "    Save"
+                puts Rainbow("      :exit,    :q").blue + "    Back to main menu\n"
+
+                @cmd = gets.chomp.to_s
+
+                system "clear" # tmp
+
+                case @cmd
+                    when ":add", ":a"
+                        print Rainbow("Url, Link, Address: ").silver;        url      = gets.chomp.to_s
+                        print Rainbow("Pseudo, User, Name, Email: ").silver; username = gets.chomp.to_s
+                        print Rainbow("Password: ").silver;                  password = gets.chomp.to_s
+
+                        @parols += Parol.new url, username, password
+
+                    when ":rm", ":r"
+                        print Rainbow("Index: ").silver; index = gets.chomp.to_i # need fix for nothing
+
+                        @parols.rm index
+
+                    when ":ls", ":l"
+                        puts Rainbow(@parols.to_s).silver
+
+                    when ":encrypt", ":e"
+                        @parols.ncrypt!
+
+                    when ":save", ":s"
+                        print Rainbow("Enter the path for db: ").silver; path_db = gets.chomp.to_s
+                        parols_io = Parols_IO.new path_db
+                        parols_io.write @parols
+
+                    when ":exit", ":q"
+                        break
+                end
+
+            end
+
+        end
+
     end
 
 end
 
-def read_write
-
-end
-
-def read_only
-    puts "Please write the full path file (i.e /home/ogromny/parol.db): "
-    db_pathname = gets.chomp.to_s
-
-    print "Now I need the password (i.e SuperStrongPassword): "
-    password    = gets.chomp.to_s
-
-    print "#{db_pathname} :: #{password}"
-end
-
-def info
-    puts "Core::Parol     #{Parol::PAROL_VERSION}"
-    puts "Core::Parols    #{Parol::PAROLS_VERSION}"
-    puts "Core::Parols_IO #{Parol::PAROLS_IO_VERSION}"
-end
-
-def github
-    system "xdg-open https://github.com/Ogromny/parol"
-end
-
-while true
-
-    puts ""
-    puts "Commands:"
-    puts "  :read_only      Read a parol db file without modifying it"
-    puts "  :read_write     Read a parol db file and edit it"
-    puts "  :write          Make a new parol db file"
-    puts "  :info           Get info"
-    puts "  :github         Open Github page of Parol"
-    puts "  :exit           Exit"
-    puts ""
-
-    cmd = gets.chomp
-
-    command cmd
-
-end
+dick = Parol::CLI.new
+dick.main
