@@ -18,7 +18,7 @@ module Parol
 
             while true
                 puts Rainbow("\nCommands:").red.underline
-                # puts Rainbow("  :read_only,  :ro").blue + "    Read a parol db file without modifying it"
+                puts Rainbow("  :read_only,  :ro").blue + "    Read a parol db file without modifying it"
                 # puts Rainbow("  :read_write, :rw").blue + "    Read a parol db file and edit it"
                 puts Rainbow("  :write,      :w ").blue  + "    Make a new parol db file"
                 puts Rainbow("  :info,       :i ").blue  + "    Get info"
@@ -30,8 +30,12 @@ module Parol
                 system "clear" # tmp
 
                 case @cmd
+                    when ":read_only", ":ro"
+                        CLI_RO.new.main
+
                     when ":write", ":w"
                         CLI_W.new.main
+
                     when ":info", ":i"
                         info
 
@@ -57,6 +61,50 @@ module Parol
 
     end
 
+    class CLI_RO
+
+        def initialize
+            @content = String.new
+            @cmd     = String.new
+        end
+
+        def main
+            system "clear"
+
+            while true
+                puts Rainbow("\nCommands:").red.underline
+                puts Rainbow("      :open,    :o").blue + "    Open"
+                puts Rainbow("      :decrypt, :d").blue + "    Decrypt"
+                puts Rainbow("      :ls,      :l").blue + "    List"
+                puts Rainbow("      :exit,    :q").blue + "    Back to main menu\n"
+
+                @cmd = gets.chomp.to_s
+
+                system "clear" # tmp
+
+                case @cmd
+                    when ":open", ":o"
+                        # print Rainbow("DB filename: ").silver; filename = gets.chomp.to_s
+                        # file = Parols_IO.new filename
+                        file = Parols_IO.new "parols.db"
+                        @content = file.read
+                        parols = Parols.new("admin").from_db @content
+                        parols.dcrypt!
+                        puts parols.to_s
+
+                    when ":decrypt", ":d"
+
+
+                    when ":exit", ":q"
+                        break
+                end
+
+            end
+
+        end
+
+    end
+
     class CLI_W
 
         def initialize
@@ -65,6 +113,8 @@ module Parol
         end
 
         def main
+            system "clear"
+
             while true
                 puts Rainbow("\nCommands:").red.underline
                 puts Rainbow("      :add,     :a").blue + "    Add"
@@ -95,6 +145,8 @@ module Parol
                         puts Rainbow(@parols.to_s).silver
 
                     when ":encrypt", ":e"
+                        print Rainbow("The password for encrypt: ").silver; encrypt_password = gets.chomp.to_s
+                        @parols.encrypt_password = encrypt_password
                         @parols.ncrypt!
 
                     when ":save", ":s"

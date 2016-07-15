@@ -18,7 +18,6 @@ module Parol
 
         # for future change of delimiter
         BEGIN_PAROL = "=begin"
-        END_PAROL   = "=end"
 
         # Constructor
         #
@@ -40,14 +39,15 @@ module Parol
             "#{BEGIN_PAROL}" +
             "@url=#{@url}" +
             "@username=#{@username}" +
-            "@password=#{@password}" +
-            "#{END_PAROL}"
+            "@password=#{@password}"
         end
 
     end
 
     # This class stock all Parol in 1
     class Parols
+
+        attr_accessor :encrypt_password
 
         # Constructor
         #
@@ -105,17 +105,35 @@ module Parol
         # @return [String] of all Parol.to_s in one String
         def to_s
             s = String.new
-            i = 0
-            @parols.each do |parol|
-                # unless parol.encrypted; ncrypt!; end
-                s +=  "[#{i}] #{parol.to_s}\n"
-                i += 1
-            end
-            return s
+            @parols.each { |parol| s += parol.to_s }
+            s
         end
 
+        # rm
+        #
+        # Delete Parol in @parols at index
+        # @param [Integer] index
         def rm index
             @parols.delete_at index
+        end
+
+
+        def from_db db_content
+            db_content = db_content.split "=begin"; db_content.delete_at 0
+
+            data_of_db = Array.new(db_content.length) { Array.new 3 }
+
+            db_content.each_index do |index|
+                db_content[index], data_of_db[index][2] = db_content[index].split ("@password=")
+                db_content[index], data_of_db[index][1] = db_content[index].split ("@username=")
+                db_content[index], data_of_db[index][0] = db_content[index].split ("@url=")
+
+                self.+ Parol.new(data_of_db[index][0], data_of_db[index][1], data_of_db[index][2], true)
+            end
+
+            puts @parols.to_s
+
+            self
         end
 
     end
