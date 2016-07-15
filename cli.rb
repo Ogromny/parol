@@ -14,6 +14,8 @@ module Parol
         end
 
         def main
+            system "clear"
+
             while true
                 puts Rainbow("\nCommands:").red.underline
                 # puts Rainbow("  :read_only,  :ro").blue + "    Read a parol db file without modifying it"
@@ -112,5 +114,4 @@ module Parol
 
 end
 
-dick = Parol::CLI.new
-dick.main
+Parol::CLI.new.main
