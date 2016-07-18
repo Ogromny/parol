@@ -173,7 +173,10 @@ module Parol
         #
         # @param [String] Parols.to_s generaly
         def write parols
-            file = File.new @filename, "w"; file.puts parols; file.close
+            # file = File.new @filename, "w"; file.puts parols; file.close
+            file = File.new @filename, "w+"
+            file.puts parols
+            file.close
             true
         end
     end

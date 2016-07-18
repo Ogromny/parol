@@ -18,8 +18,7 @@ module Parol
 
             while true
                 puts Rainbow("\nCommands:").red.underline
-                puts Rainbow("  :read_only,  :ro").blue + "    Read a parol db file without modifying it"
-                # puts Rainbow("  :read_write, :rw").blue + "    Read a parol db file and edit it"
+                puts Rainbow("  :read,       :r").blue + "    Read a parol db file"
                 puts Rainbow("  :write,      :w ").blue  + "    Make a new parol db file"
                 puts Rainbow("  :info,       :i ").blue  + "    Get info"
                 puts Rainbow("  :github,     :gh").blue + "    Open Github page of Parol"
@@ -30,7 +29,7 @@ module Parol
                 system "clear"
 
                 case @cmd
-                    when ":read_only", ":ro"; CLI_RO.new.main
+                    when ":read", ":r"; CLI_R.new.main
 
                     when ":write", ":w"; CLI_W.new.main
 
@@ -56,10 +55,14 @@ module Parol
 
     end
 
-    class CLI_RO
+    class CLI_R
 
         def initialize
-            @cmd = String.new
+            @cmd              = String.new
+            @parols           = nil
+            @encrypt_password = String.new
+            @encrypt          = true
+            @db_pathname      = String.new
         end
 
         def main
@@ -68,8 +71,12 @@ module Parol
             while true
                 puts Rainbow("\nCommands:").red.underline
                 puts Rainbow("      :open,    :o").blue + "    Open"
+                puts Rainbow("      :add,     :a").blue + "    Add"
+                puts Rainbow("      :rm,      :r").blue + "    Remove"
+                puts Rainbow("      :encrypt, :e").blue + "    Encrypt"
                 puts Rainbow("      :decrypt, :d").blue + "    Decrypt"
                 puts Rainbow("      :ls,      :l").blue + "    List"
+                puts Rainbow("      :save,    :s").blue + "    Save"
                 puts Rainbow("      :exit,    :q").blue + "    Back to main menu\n"
 
                 @cmd = gets.chomp.to_s
@@ -78,15 +85,38 @@ module Parol
 
                 case @cmd
                     when ":open", ":o"
-                        print Rainbow("DB filename: ").silver; file = Parols_IO.new gets.chomp.to_s
+                        print Rainbow("DB filename: ").silver; @db_pathname = gets.chomp.to_s; parols_io = Parols_IO.new @db_pathname
 
-                        print Rainbow("DB password: ").silver; password = gets.chomp.to_s
+                        print Rainbow("DB password: ").silver; @encrypt_password = gets.chomp.to_s
 
-                        @parols = Parols.new(password).from_db file.read
+                        @parols = Parols.new(@encrypt_password).from_db parols_io.read
 
-                    when ":decrypt", ":d"; @parols.dcrypt!
+                    when ":add", ":a"
+                        print Rainbow("Url, Link, Address: ").silver;        url      = gets.chomp.to_s
+                        print Rainbow("Pseudo, User, Name, Email: ").silver; username = gets.chomp.to_s
+                        print Rainbow("Password: ").silver;                  password = gets.chomp.to_s
+
+                        @parols += Parol.new url, username, password
+
+                    when ":rm", ":r"
+                        print Rainbow("Index: ").silver; index = gets.chomp.to_i # need fix for nothing
+
+                        @parols.rm index
+
+                    when ":encrypt", ":e"
+                        @parols.ncrypt!
+                        @encrypted = true
+
+                    when ":decrypt", ":d"
+                        @parols.encrypt_password = @encrypt_password
+                        @parols.dcrypt!
+                        @encrypted = false
 
                     when ":ls", ":l"; puts @parols.to_s true
+
+                    when ":save", ":s"
+                        parols_io = Parols_IO.new @db_pathname
+                        parols_io.write @parols
 
                     when ":exit", ":q"; break
 
