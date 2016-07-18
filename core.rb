@@ -7,9 +7,9 @@ require 'aes'
 # Module Parol contains class: Parol, Parols, Parols_IO
 module Parol
 
-    PAROL_VERSION = "1.8.5"
-    PAROLS_VERSION = "1.8.5"
-    PAROLS_IO_VERSION = "1.8.5"
+    PAROL_VERSION = "2.0.0"
+    PAROLS_VERSION = "2.0.0"
+    PAROLS_IO_VERSION = "2.0.0"
 
     # This class represents an entry
     class Parol
