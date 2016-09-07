@@ -68,7 +68,12 @@ class CLI < Thor
             puts parol.join("|")
         end
     end
-    
+
+    desc "remove_all", "Supprimer tout les comptes"
+    def remove_all
+        Parol.destroy_all
+    end
+
 end
 
 CLI.start ARGV
