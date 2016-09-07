@@ -41,6 +41,34 @@ class CLI < Thor
         )
     end
 
+    desc "show_all", "Montrer tout les comptes"
+    def show_all
+        parols_brut = Parol.all
+        parols = Array.new
+
+        parols_brut.each do |parol|
+            application = parol.application
+            application = application[0..20] + "..." if application.length > 20
+
+            username = parol.username 
+            username = username[0..15]  + "..." if username.length > 15
+
+            password = parol.password
+            password = password[0..5] + "..." if password.length > 5
+
+            parols << [
+                parol.id,
+                application,
+                username,
+                password
+            ]
+        end
+
+        parols.each do |parol|
+            puts parol.join("|")
+        end
+    end
+    
 end
 
 CLI.start ARGV
