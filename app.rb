@@ -74,6 +74,15 @@ class CLI < Thor
         Parol.destroy_all
     end
 
+    desc "show id", "Voir en détail le compte ayant l'id 'id'"
+    def show id
+        parol = Parol.where(id: id).take
+        puts "id:              " + parol.id.to_s
+        puts "Application/URL: " + parol.application
+        puts "Username/Email:  " + parol.username
+        puts "Password:        " + parol.password
+    end
+
 end
 
 CLI.start ARGV
