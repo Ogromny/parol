@@ -27,11 +27,11 @@ class CLI < Thor
 
     desc "add", "Ajouter un nouveau compte"
     def add
-        puts "Application/URL" 
+        print "Application/URL: " 
         application = STDIN.gets.to_s.chomp
-        puts "Username/Email"
+        print "Username/Email:  "
         username = STDIN.gets.to_s.chomp
-        puts "Password"
+        print "Password:        "
         password = STDIN.gets.to_s.chomp
 
         Parol.create( 
