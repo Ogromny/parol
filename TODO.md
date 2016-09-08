@@ -1,7 +1,7 @@
 TODO:
 -----
 
-* [ ] Add colors
+* [x] Add colors
 * [ ] Add config:
     * [ ] Add persistant config
 * [ ] Add long description
