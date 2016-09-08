@@ -43,10 +43,9 @@ class CLI < Thor
 
     desc "show_all", "Montrer tout les comptes"
     def show_all
-        parols_brut = Parol.all
         parols = Array.new
 
-        parols_brut.each do |parol|
+        Parol.all.each do |parol|
             application = parol.application
             application = application[0..20] + "..." if application.length > 20
 
