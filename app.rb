@@ -83,6 +83,11 @@ class CLI < Thor
         puts "Password:        " + parol.password
     end
 
+    desc "remove id", "Supprimer le compte ayant l'id 'id'"
+    def remove id
+        Parol.where(id: id).destroy
+    end
+
 end
 
 CLI.start ARGV
