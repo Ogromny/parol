@@ -43,29 +43,27 @@ class CLI < Thor
 
     desc "show_all", "Montrer tout les comptes"
     def show_all
-        parols = Array.new
+
+        sep   = "|"
+        lines = "-" * (5 + 20 + 20 + 20 + 5) # id, application, username, password, sep 
+
+        puts lines
+        puts sep + "id".center(5) + sep + "Application/URL".center(20) + sep + "Username/Email".center(20) + sep + "Password".center(20) + sep
+        puts lines
 
         Parol.all.each do |parol|
-            application = parol.application
-            application = application[0..20] + "..." if application.length > 20
 
-            username = parol.username 
-            username = username[0..15]  + "..." if username.length > 15
+            shortcuts = -> (content, desired_length) {
+                # desired_length -= 3
+                content = content.length > desired_length ? content[0 ... desired_length] + "***" : content
+                content.center 20
+            }
 
-            password = parol.password
-            password = password[0..5] + "..." if password.length > 5
-
-            parols << [
-                parol.id,
-                application,
-                username,
-                password
-            ]
+            puts sep + parol.id.to_s.center(5) + sep + shortcuts.call(parol.application, 18) + sep + shortcuts.call(parol.username, 18) + sep + shortcuts.call(parol.password, 5) + sep
         end
 
-        parols.each do |parol|
-            puts parol.join("|")
-        end
+        puts lines
+
     end
 
     desc "remove_all", "Supprimer tout les comptes"
@@ -86,7 +84,7 @@ class CLI < Thor
 
     desc "remove id", "Supprimer le compte ayant l'id 'id'"
     def remove id
-        Parol.where(id: id).destroy
+        Parol.destroy(id)
     end
 
 end
