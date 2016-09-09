@@ -26,9 +26,9 @@ module Parol
 
     class CLI < Thor
 
-        desc "add", "Ajouter un nouveau compte"
+        desc "add", "Add a new account."
         long_desc <<-LONGDESC
-            `parol add` Ajoute un nouveau compte et l'enregistre dans parol.sqlite3
+            `parol add` Add a new account and save it in parol.sqlite3
         LONGDESC
         def add
             print "Application/URL: ".color(:magenta) 
@@ -45,9 +45,9 @@ module Parol
             )
         end
 
-        desc "show_all", "Montrer tout les comptes"
+        desc "show_all", "Display all the accounts."
         long_desc <<-LONGDESC
-            `parol show_all` Montre tout les comptes enregistrés dans parol.sqlite3
+            `parol show_all` Delete all the accounts from the database. This action is not reversable.
         LONGDESC
         def show_all
 
@@ -80,17 +80,17 @@ module Parol
 
         end
 
-        desc "remove_all", "Supprimer tout les comptes"
+        desc "remove_all", "Delete all the accounts, this is not reversable."
         long_desc <<-LONGDESC
-            `parol remove_all` Détruit de facon irrémediable tout les comptes enregistrés dans parol.sqlite3 
+            `parol remove_all` Delete all the accounts from the database. This action is not reversable.
         LONGDESC
         def remove_all
             Parol.destroy_all
         end
 
-        desc "show id", "Voir en détail le compte ayant l'id 'id'"
+        desc "show id", "Display details for the account <id>"
         long_desc <<-LONGDESC
-            `parol show id` Montre en détail le compte avec l'id `id` enregistré dans parol.sqlite3
+            `parol show id` Delete all the accounts from the database. This action is not reversable.
         LONGDESC
         def show id
             parol = Parol.where(id: id).take
@@ -102,9 +102,9 @@ module Parol
             end
         end
 
-        desc "remove id", "Supprimer le compte ayant l'id 'id'"
+        desc "remove id", "Delete the account for <id>"
         long_desc <<-LONGDESC
-            `parol remove_all` Détruit de facon irrémediable le compte avec l'id `id` enregistré dans parol.sqlite3 
+            `parol remove_all` Delete the account from the database, where id = <id>. This action is not reversable.
         LONGDESC
         def remove id
             Parol.destroy(id)

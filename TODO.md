@@ -4,8 +4,8 @@ TODO:
 * [x] Add colors
 * [ ] Add config:
     * [ ] Add persistant config
-* [ ] Add long description
+* [x] Add long description
 * [ ] Add encryption
 * [ ] Add master password
 * [ ] Make Readme
-* [ ] Translate to english
+* [x] Translate to english
