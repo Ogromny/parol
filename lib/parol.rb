@@ -1,6 +1,7 @@
 require 'active_record'
 require 'thor'
 require 'rainbow/ext/string'
+require 'crypt_keeper'
 
 module Parol
     ActiveRecord::Base.establish_connection(
@@ -11,9 +12,9 @@ module Parol
     unless ActiveRecord::Base.connection.data_sources.include? 'parols'
         ActiveRecord::Schema.define do
             create_table :parols do |t|
-                t.string :application
-                t.string :username
-                t.string :password
+                t.text :application
+                t.text :username
+                t.text :password
             end
         end
     end
@@ -21,16 +22,17 @@ module Parol
     class Parol < ActiveRecord::Base
 
         self.table_name = "parols"
+        crypt_keeper :application, :username, :password, :encryptor => :aes_new, :key => 'parol', salt: 'salt'
 
     end
 
     class CLI < Thor
 
-        desc "add", "Add a new account."
+        desc "new", "Add a new account."
         long_desc <<-LONGDESC
-            `parol add` Add a new account and save it in parol.sqlite3
+            `parol new` Add a new account and save it in the database
         LONGDESC
-        def add
+        def new
             print "Application/URL: ".color(:magenta) 
             application = STDIN.gets.to_s.chomp
             print "Username/Email:  ".color(:blue)
@@ -45,11 +47,11 @@ module Parol
             )
         end
 
-        desc "show_all", "Display all the accounts."
+        desc "list", "Display all the accounts."
         long_desc <<-LONGDESC
-            `parol show_all` Delete all the accounts from the database. This action is not reversable.
+            `parol list` List all the accounts from the database.
         LONGDESC
-        def show_all
+        def list
 
             sep   = "|".color(:aqua)
             lines = "-" * (5 + 20 + 20 + 20 + 5) # id, application, username, password, sep 
@@ -80,17 +82,17 @@ module Parol
 
         end
 
-        desc "remove_all", "Delete all the accounts, this is not reversable."
+        desc "delete_all", "Delete all the accounts, this is not reversable."
         long_desc <<-LONGDESC
-            `parol remove_all` Delete all the accounts from the database. This action is not reversable.
+            `parol delete_all` Delete all the accounts from the database. This action is not reversable.
         LONGDESC
-        def remove_all
+        def delete_all
             Parol.destroy_all
         end
 
         desc "show id", "Display details for the account <id>"
         long_desc <<-LONGDESC
-            `parol show id` Delete all the accounts from the database. This action is not reversable.
+            `parol show id` Display the account from the database, where id = <id>. 
         LONGDESC
         def show id
             parol = Parol.where(id: id).take
@@ -102,11 +104,11 @@ module Parol
             end
         end
 
-        desc "remove id", "Delete the account for <id>"
+        desc "delete id", "Delete the account for <id>"
         long_desc <<-LONGDESC
-            `parol remove_all` Delete the account from the database, where id = <id>. This action is not reversable.
+            `parol delete <id>` Delete the account from the database, where id = <id>. This action is not reversable.
         LONGDESC
-        def remove id
+        def delete id
             Parol.destroy(id)
         end
 
