@@ -4,6 +4,8 @@ require 'rainbow/ext/string'
 require 'crypt_keeper'
 
 module Parol
+    $database_password = 'parol'
+
     ActiveRecord::Base.establish_connection(
         adapter: 'sqlite3',
         database: 'parol.sqlite3'
@@ -22,7 +24,7 @@ module Parol
     class Parol < ActiveRecord::Base
 
         self.table_name = "parols"
-        crypt_keeper :application, :username, :password, :encryptor => :aes_new, :key => 'parol', salt: 'salt'
+        crypt_keeper :application, :username, :password, :encryptor => :aes_new, :key => $database_password, salt: 'parol_the_best_password_manager_!'
 
     end
 
