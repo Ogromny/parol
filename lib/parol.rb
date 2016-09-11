@@ -1,31 +1,55 @@
 require 'active_record'
 require 'thor'
-require 'crypt_keeper'
+require 'rbnacl/libsodium'
 
 module Parol
 
-    ActiveRecord::Base.establish_connection(
-        adapter: 'sqlite3',
-        database: ENV['HOME'] + '/.config/parol/parol.sqlite3'
-    )
+    $password = ""
 
-    unless ActiveRecord::Base.connection.data_sources.include? 'parols'
-        ActiveRecord::Schema.define do
-            create_table :parols do |t|
-                t.text :application
-                t.text :username
-                t.text :password
-            end
+    class Database
+
+        ask = lambda { |a| print a; STDIN.gets.chomp.to_s }
+
+        ActiveRecord::Base.establish_connection(
+            adapter: 'sqlite3',
+            database: ENV['HOME'] + '/.config/parol/parol.sqlite3'
+        )
+
+        if ActiveRecord::Base.connection.data_sources.include? 'parols'
+            $password = ask.call "Password of the database: " while $password.length != 32
+        else
+            ActiveRecord::Schema.define {
+                create_table(:parols) { |t| t.binary :application; t.binary :username; t.binary :password }
+            }
+            $password = ask.call "Password for the database ( it must be 32 of length ): " while $password.length != 32
+            puts "Never forget this password: " + $password
         end
+
     end
 
-    print "Master password: "
-    $master_password = STDIN.gets.chomp
 
     class Parol < ActiveRecord::Base
 
-        self.table_name = "parols"
-        crypt_keeper :application, :username, :password, :encryptor => :aes_new, :key => $master_password, salt: 'parol_the_best_password_manager_!'
+    end
+
+    class Utils
+
+        @@box = RbNaCl::SimpleBox.from_secret_key(String.new($password, encoding: 'BINARY'))
+
+        def self.encrypt(parol)
+            application = @@box.encrypt(parol[0])
+            username    = @@box.encrypt(parol[1])
+            password    = @@box.encrypt(parol[2])
+            { application: application, username: username, password: password }
+        end
+
+        def self.decrypt(parol)
+            id          = parol[0].to_s
+            application = @@box.decrypt(parol[1])
+            username    = @@box.decrypt(parol[2])
+            password    = @@box.decrypt(parol[3])
+            [id, application, username, password]
+        end
 
     end
 
@@ -38,45 +62,9 @@ module Parol
             username    = ask "Username/Email:  ", :blue
             password    = ask "Password:        ", :yellow
 
-            puts application
+            parol = Utils.encrypt [application, username, password]
 
-            Parol.create( 
-                application: application,
-                username: username,
-                password: password
-            )
-        end
-
-        desc "list", "Display all the accounts."
-        long_desc "`parol list` List all the accounts from the database."
-        def list
-            shortcuts = lambda { |c, d| (c.length>d ? c[0...d]+'***' : c).center(20) }
-            separator = set_color '|', :cyan
-            lines     = set_color ('-' * 70), :cyan
-
-            say lines + "\n" + \
-                separator + set_color('id'.center(5), :green) + separator + \
-                set_color('Application/URL'.center(20), :magenta) + separator + \
-                set_color('Username/Email'.center(20), :blue) + separator + \
-                set_color('Password'.center(20), :yellow) + separator + "\n" + lines
-
-            Parol.all.each do |parol|
-
-                say separator + \
-                    set_color(parol.id.to_s.center(5),               :green)   + separator + \
-                    set_color(shortcuts.call(parol.application, 18), :magenta) + separator + \
-                    set_color(shortcuts.call(parol.username   , 18), :blue)    + separator + \
-                    set_color(shortcuts.call(parol.password   , 5),  :yellow)  + separator
-
-            end
-
-            say lines
-        end
-
-        desc "delete_all", "Delete all the accounts, this is not reversable."
-        long_desc "`parol delete_all` Delete all the accounts from the database. This action is not reversable."
-        def delete_all
-            Parol.destroy_all
+            Parol.create(parol)
         end
 
         desc "show id", "Display details for the account <id>"
@@ -84,18 +72,55 @@ module Parol
         def show id
             parol = Parol.where(id: id).take
 
-            exit unless parol
+            unless parol
+                exit
+            end
 
-            say "id:              #{parol.id.to_s}"
-            say "Application/URL: #{parol.application}"
-            say "Username/Email:  #{parol.username}"
-            say "Password:        #{parol.password}"
+            parol_array = [parol.id, parol.application, parol.username, parol.password]
+
+            parol_decrypted = Utils.decrypt(parol_array)
+
+            say "id:              #{parol_decrypted[0]}"
+            say "Application/URL: #{parol_decrypted[1]}"
+            say "Username/Email:  #{parol_decrypted[2]}"
+            say "Password:        #{parol_decrypted[3]}"
         end
 
-        desc "delete id", "Delete the account for <id>"
+        # new rewrite of list
+        # desc "list", "Display all the accounts."
+        # long_desc "`parol list` List all the accounts from the database."
+        # def list
+        #     shortcuts = lambda { |c, d| (c.length>d ? c[0...d]+'***' : c).center(20) }
+        #     separator = set_color '|', :cyan
+        #     lines     = set_color ('-' * 70), :cyan
+
+        #     say lines + "\r\n" + separator + \
+        #         set_color('id'.center(5), :green) + separator + \
+        #         set_color('Application/URL'.center(20), :magenta) + separator + \
+        #         set_color('Username/Email'.center(20), :blue) + separator + \
+        #         set_color('Password'.center(20), :yellow) + separator + "\r\n" + lines
+
+        #     Parol.all.each do |parol|
+
+        #         say separator + \
+        #             set_color(parol.id.to_s.center(5),               :green)   + separator + \
+        #             set_color(shortcuts.call(parol.application, 17), :magenta) + separator + \
+        #             set_color(shortcuts.call(parol.username   , 17), :blue)    + separator + \
+        #             set_color(shortcuts.call(parol.password   , 5),  :yellow)  + separator
+
+        #     end
+
+        #     say lines
+        # end
+
+        desc "delete id", "Delete the account for <id>, or <all> for everything"
         long_desc "`parol delete <id>` Delete the account from the database, where id = <id>. This action is not reversable."
         def delete id
-            Parol.destroy(id)
+            if id == "all"
+                Parol.destroy_all
+            else
+                Parol.destroy(id)
+            end
         end
 
     end
