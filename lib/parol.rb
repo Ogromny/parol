@@ -86,32 +86,39 @@ module Parol
             say "Password:        #{parol_decrypted[3]}"
         end
 
-        # new rewrite of list
-        # desc "list", "Display all the accounts."
-        # long_desc "`parol list` List all the accounts from the database."
-        # def list
-        #     shortcuts = lambda { |c, d| (c.length>d ? c[0...d]+'***' : c).center(20) }
-        #     separator = set_color '|', :cyan
-        #     lines     = set_color ('-' * 70), :cyan
+        desc "list", "Display all the accounts."
+        long_desc "`parol list` List all the accounts from the database."
+        def list
+            shortcuts = lambda { |c, d| (c.length>d ? c[0...d]+'...' : c).center(20) }
+            separator = set_color '|', :cyan
+            lines     = set_color ('-' * 70), :cyan
 
-        #     say lines + "\r\n" + separator + \
-        #         set_color('id'.center(5), :green) + separator + \
-        #         set_color('Application/URL'.center(20), :magenta) + separator + \
-        #         set_color('Username/Email'.center(20), :blue) + separator + \
-        #         set_color('Password'.center(20), :yellow) + separator + "\r\n" + lines
+            id = set_color 'id'.center(5), :green
+            au = set_color 'Application/URL'.center(20), :magenta
+            ue = set_color 'Username/Email'.center(20), :blue
+            pw = set_color 'Password'.center(20), :yellow
 
-        #     Parol.all.each do |parol|
+            say lines
+            say "#{separator}#{id}#{separator}#{au}#{separator}#{ue}#{separator}#{pw}#{separator}"
+            say lines
 
-        #         say separator + \
-        #             set_color(parol.id.to_s.center(5),               :green)   + separator + \
-        #             set_color(shortcuts.call(parol.application, 17), :magenta) + separator + \
-        #             set_color(shortcuts.call(parol.username   , 17), :blue)    + separator + \
-        #             set_color(shortcuts.call(parol.password   , 5),  :yellow)  + separator
+            Parol.all.each do |parol|
 
-        #     end
+                parol_array = [parol.id, parol.application, parol.username, parol.password]
 
-        #     say lines
-        # end
+                parol_decrypted = Utils.decrypt(parol_array)
+
+                parol_decrypted[0] = set_color(parol_decrypted[0].center(5), :green)
+                parol_decrypted[1] = set_color(shortcuts.call(parol_decrypted[1], 17), :magenta)
+                parol_decrypted[2] = set_color(shortcuts.call(parol_decrypted[2], 17), :blue)
+                parol_decrypted[3] = set_color(shortcuts.call(parol_decrypted[3], 5), :yellow)
+
+                say "#{separator}#{parol_decrypted[0]}#{separator}#{parol_decrypted[1]}#{separator}#{parol_decrypted[2]}#{separator}#{parol_decrypted[3]}#{separator}"
+                
+            end
+
+            say lines
+        end
 
         desc "delete id", "Delete the account for <id>, or <all> for everything"
         long_desc "`parol delete <id>` Delete the account from the database, where id = <id>. This action is not reversable."
