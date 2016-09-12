@@ -72,18 +72,26 @@ module Parol
         def show id
             parol = Parol.where(id: id).take
 
-            unless parol
-                exit
-            end
+            exit unless parol
+
+            separator = set_color '|', :cyan
+            lines     = set_color ('-' * 70), :cyan
 
             parol_array = [parol.id, parol.application, parol.username, parol.password]
 
             parol_decrypted = Utils.decrypt(parol_array)
 
-            say "id:              #{parol_decrypted[0]}"
-            say "Application/URL: #{parol_decrypted[1]}"
-            say "Username/Email:  #{parol_decrypted[2]}"
-            say "Password:        #{parol_decrypted[3]}"
+            id = set_color parol_decrypted[0].center(5), :green
+            au = set_color parol_decrypted[1].center(62), :magenta
+            ue = set_color parol_decrypted[2].center(68), :blue
+            pw = set_color parol_decrypted[3].center(68), :yellow
+
+            say lines
+            say "#{separator}#{id}#{separator}#{au}#{separator}"
+            say lines
+            say "#{separator}#{ue}#{separator}"
+            say "#{separator}#{pw}#{separator}"
+            say lines
         end
 
         desc "list", "Display all the accounts."
