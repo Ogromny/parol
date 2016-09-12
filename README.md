@@ -14,10 +14,10 @@ parol
 ```
 
 ### Screenshot
-![alt tag](https://raw.githubusercontent.com/Ogromny/parol/tree/pepel/ressource/1.png)
-![alt tag](https://raw.githubusercontent.com/Ogromny/parol/tree/pepel/ressource/2.png)
-![alt tag](https://raw.githubusercontent.com/Ogromny/parol/tree/pepel/ressource/3.png)
-![alt tag](https://raw.githubusercontent.com/Ogromny/parol/tree/pepel/ressource/4.png)
+![screenshot](https://raw.githubusercontent.com/Ogromny/parol/pepel/ressource/1.png)
+![screenshot](https://raw.githubusercontent.com/Ogromny/parol/pepel/ressource/2.png)
+![screenshot](https://raw.githubusercontent.com/Ogromny/parol/pepel/ressource/3.png)
+![screenshot](https://raw.githubusercontent.com/Ogromny/parol/pepel/ressource/4.png)
 
 ### Contact
 > in French or English
