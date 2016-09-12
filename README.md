@@ -13,6 +13,12 @@ gem install parol-x.x.x.gem
 parol
 ```
 
+### Screenshot
+![alt tag](https://github.com/Ogromny/parol/tree/pepel/ressource/1.png)
+![alt tag](https://github.com/Ogromny/parol/tree/pepel/ressource/2.png)
+![alt tag](https://github.com/Ogromny/parol/tree/pepel/ressource/3.png)
+![alt tag](https://github.com/Ogromny/parol/tree/pepel/ressource/4.png)
+
 ### Contact
 > in French or English
 
