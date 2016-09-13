@@ -1,12 +1,12 @@
 Gem::Specification.new do |s|
     s.name        = 'parol'
-    s.version     = '1.5.2'
+    s.version     = '1.5.4'
     s.date        = '2016-09-12'
     s.summary     = 'parol'
     s.description = 'A simple and secure CLI password manager'
     s.authors     = ['Ogromny']
     s.email       = 'ogromny@openmailbox.org'
-    s.files       = ['lib/parol.rb']
+    s.files       = Dir.glob "{lib}/**/*"
     s.homepage    = 'https://github.com/Ogromny/parol/'
     s.license     = 'MIT'
     s.executables << 'parol'
