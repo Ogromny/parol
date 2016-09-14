@@ -5,7 +5,7 @@ require_relative 'config'
 module Parol
 
     $password = ""
-
+    
     class Database
 
         ask = lambda { |a| print a; STDIN.gets.chomp.to_s }
