@@ -118,5 +118,13 @@ module Parol
                 say 'Aborted!'
             end
         end
+
+        desc 'default_config', 'Set default config'
+        def default_config
+            $config = Hash.new
+            $config['color'] = 'off'
+            $config['password'] = 'off'
+            Config.save $config.to_yaml
+        end
     end
 end
