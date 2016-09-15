@@ -126,5 +126,17 @@ module Parol
             $config['password'] = 'off'
             Config.save $config.to_yaml
         end
+
+        desc 'github', 'Open githut page of parol'
+        def github
+            link = 'https://github.com/Ogromny/parol'
+            if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/
+                system "start #{link}"
+            elsif RbConfig::CONFIG['host_os'] =~ /darwin/
+                system "open #{link}"
+            else
+                system "xdg-open #{link}"
+            end
+        end
     end
 end
