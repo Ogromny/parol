@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
     s.name        = 'parol'
-    s.version     = '1.6.2'
+    s.version     = '1.6.3'
     s.date        = '2016-09-16'
     s.summary     = 'parol'
     s.description = 'A simple and secure CLI password manager'

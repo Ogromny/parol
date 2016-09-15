@@ -108,5 +108,15 @@ module Parol
             end
             Config.save $config.to_yaml
         end
+
+        desc 'delete_db', 'Delete the database irreversible action !'
+        def delete_db
+            password_confirmation = ask 'Password: ', :red
+            if $password == password_confirmation
+                File.delete(ENV['HOME'] + '/.config/parol/parol.sqlite3')
+            else
+                say 'Aborted!'
+            end
+        end
     end
 end
