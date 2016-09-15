@@ -16,13 +16,13 @@ module Parol
         )
 
         if ActiveRecord::Base.connection.data_sources.include? 'parols'
-            $password = ask.call "Password of the database: " while $password.length != 32
+            $password = ask.call 'Password of the database: ' while $password.length != 32
         else
             ActiveRecord::Schema.define {
                 create_table(:parols) { |t| t.binary :application; t.binary :username; t.binary :password }
             }
-            $password = ask.call "Password for the database ( it must be 32 of length ): " while $password.length != 32
-            puts "Never forget this password: " + $password
+            $password = ask.call 'Password for the database ( it must be 32 of length ): ' while $password.length != 32
+            puts 'Never forget this password: ' + $password
         end
 
     end

@@ -7,36 +7,36 @@ module Parol
 
     class CLI < Thor
 
-        desc "new", "Add a new account."
-        long_desc "`parol new` Add a new account and save it in the database"
+        desc 'new', 'Add a new account.'
+        long_desc '`parol new` Add a new account and save it in the database'
         def new
-            application = ask "Application/URL: ", ($config['color'].downcase == "on" ? :magenta : nil)
-            username    = ask "Username/Email:  ", ($config['color'].downcase == "on" ? :blue    : nil)
-            password    = ask "Password:        ", ($config['color'].downcase == "on" ? :yellow  : nil)
+            application = ask 'Application/URL: ', ($config['color'].downcase == 'on' ? :magenta : nil)
+            username    = ask 'Username/Email:  ', ($config['color'].downcase == 'on' ? :blue    : nil)
+            password    = ask 'Password:        ', ($config['color'].downcase == 'on' ? :yellow  : nil)
 
             parol = Crypt.encrypt [application, username, password]
 
             Parol.create(parol)
         end
 
-        desc "show id", "Display details for the account <id>"
-        long_desc "`parol show id` Display the account from the database, where id = <id>."
+        desc 'show id', 'Display details for the account <id>'
+        long_desc '`parol show id` Display the account from the database, where id = <id>.'
         def show id
             parol = Parol.where(id: id).take
 
             exit unless parol
 
-            separator = set_color '|',  ($config['color'].downcase == "on" ? :cyan : nil)
-            lines     = set_color ('-' * 70),  ($config['color'].downcase == "on" ? :cyan : nil)
+            separator = set_color '|',  ($config['color'].downcase == 'on' ? :cyan : nil)
+            lines     = set_color ('-' * 70),  ($config['color'].downcase == 'on' ? :cyan : nil)
 
             parol_array = [parol.id, parol.application, parol.username, parol.password]
 
             parol_decrypted = Crypt.decrypt(parol_array)
 
-            id = set_color parol_decrypted[0].center(5),  ($config['color'].downcase == "on" ? :green : nil)
-            au = set_color parol_decrypted[1].center(62),  ($config['color'].downcase == "on" ? :magenta : nil)
-            ue = set_color parol_decrypted[2].center(68),  ($config['color'].downcase == "on" ? :blue : nil)
-            pw = set_color parol_decrypted[3].center(68),  ($config['color'].downcase == "on" ? :yellow : nil)
+            id = set_color parol_decrypted[0].center(5),  ($config['color'].downcase == 'on' ? :green : nil)
+            au = set_color parol_decrypted[1].center(62),  ($config['color'].downcase == 'on' ? :magenta : nil)
+            ue = set_color parol_decrypted[2].center(68),  ($config['color'].downcase == 'on' ? :blue : nil)
+            pw = set_color parol_decrypted[3].center(68),  ($config['color'].downcase == 'on' ? :yellow : nil)
 
             say lines
             say "#{separator}#{id}#{separator}#{au}#{separator}"
@@ -46,17 +46,17 @@ module Parol
             say lines
         end
 
-        desc "list", "Display all the accounts."
-        long_desc "`parol list` List all the accounts from the database."
+        desc 'list', 'Display all the accounts.'
+        long_desc '`parol list` List all the accounts from the database.'
         def list
             shortcuts = lambda { |c, d| (c.length>d ? c[0...d]+'...' : c).center(20) }
-            separator = set_color '|', ($config['color'].downcase == "on" ? :cyan : nil)
-            lines     = set_color ('-' * 70), ($config['color'].downcase == "on" ? :cyan : nil)
+            separator = set_color '|', ($config['color'].downcase == 'on' ? :cyan : nil)
+            lines     = set_color ('-' * 70), ($config['color'].downcase == 'on' ? :cyan : nil)
 
-            id = set_color 'id'.center(5), ($config['color'].downcase == "on" ? :green : nil)
-            au = set_color 'Application/URL'.center(20), ($config['color'].downcase == "on" ? :magenta : nil)
-            ue = set_color 'Username/Email'.center(20), ($config['color'].downcase == "on" ? :blue : nil)
-            pw = set_color 'Password'.center(20), ($config['color'].downcase == "on" ? :yellow : nil)
+            id = set_color 'id'.center(5), ($config['color'].downcase == 'on' ? :green : nil)
+            au = set_color 'Application/URL'.center(20), ($config['color'].downcase == 'on' ? :magenta : nil)
+            ue = set_color 'Username/Email'.center(20), ($config['color'].downcase == 'on' ? :blue : nil)
+            pw = set_color 'Password'.center(20), ($config['color'].downcase == 'on' ? :yellow : nil)
 
             say lines
             say "#{separator}#{id}#{separator}#{au}#{separator}#{ue}#{separator}#{pw}#{separator}"
@@ -73,10 +73,10 @@ module Parol
                 parol_decrypted[2] = shortcuts.call parol_decrypted[2], 17
                 parol_decrypted[3] = shortcuts.call parol_decrypted[3], 5
 
-                parol_decrypted[0] = set_color parol_decrypted[0], ($config['color'].downcase == "on" ? :green : nil)
-                parol_decrypted[1] = set_color parol_decrypted[1], ($config['color'].downcase == "on" ? :magenta : nil)
-                parol_decrypted[2] = set_color parol_decrypted[2], ($config['color'].downcase == "on" ? :blue : nil)
-                parol_decrypted[3] = set_color parol_decrypted[3], ($config['color'].downcase == "on" ? :yellow : nil)
+                parol_decrypted[0] = set_color parol_decrypted[0], ($config['color'].downcase == 'on' ? :green : nil)
+                parol_decrypted[1] = set_color parol_decrypted[1], ($config['color'].downcase == 'on' ? :magenta : nil)
+                parol_decrypted[2] = set_color parol_decrypted[2], ($config['color'].downcase == 'on' ? :blue : nil)
+                parol_decrypted[3] = set_color parol_decrypted[3], ($config['color'].downcase == 'on' ? :yellow : nil)
 
                 say "#{separator}#{parol_decrypted[0]}#{separator}#{parol_decrypted[1]}#{separator}#{parol_decrypted[2]}#{separator}#{parol_decrypted[3]}#{separator}"
                 
@@ -85,19 +85,19 @@ module Parol
             say lines
         end
 
-        desc "delete id", "Delete the account for <id>, or <all> for everything"
-        long_desc "`parol delete <id>` Delete the account from the database, where id = <id>. This action is not reversable."
+        desc 'delete id', 'Delete the account for <id>, or <all> for everything'
+        long_desc '`parol delete <id>` Delete the account from the database, where id = <id>. This action is not reversable.'
         def delete id
-            if id.downcase == "all"
+            if id.downcase == 'all'
                 Parol.destroy_all
             else
                 Parol.destroy(id)
             end
         end
 
-        desc "color on/off", "Set the color <on> or <off>."
+        desc 'color on/off', 'Set the color <on> or <off>.'
         def color on_or_off
-            if on_or_off.downcase == "on"
+            if on_or_off.downcase == 'on'
                 $config['color'] = 'on'
             else
                 $config['color'] = 'off'
