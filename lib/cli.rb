@@ -3,12 +3,9 @@ require_relative 'base_crypt'
 
 module Parol
 
-    $config = Config.load
-
     class CLI < Thor
 
         desc 'new', 'Add a new account.'
-        long_desc '`parol new` Add a new account and save it in the database'
         def new
             application = ask 'Application/URL: ', ($config['color'].downcase == 'on' ? :magenta : nil)
             username    = ask 'Username/Email:  ', ($config['color'].downcase == 'on' ? :blue    : nil)
@@ -20,7 +17,6 @@ module Parol
         end
 
         desc 'show id', 'Display details for the account <id>'
-        long_desc '`parol show id` Display the account from the database, where id = <id>.'
         def show id
             parol = Parol.where(id: id).take
 
@@ -47,7 +43,6 @@ module Parol
         end
 
         desc 'list', 'Display all the accounts.'
-        long_desc '`parol list` List all the accounts from the database.'
         def list
             shortcuts = lambda { |c, d| (c.length>d ? c[0...d]+'...' : c).center(20) }
             separator = set_color '|', ($config['color'].downcase == 'on' ? :cyan : nil)
@@ -86,7 +81,6 @@ module Parol
         end
 
         desc 'delete id', 'Delete the account for <id>, or <all> for everything'
-        long_desc '`parol delete <id>` Delete the account from the database, where id = <id>. This action is not reversable.'
         def delete id
             if id.downcase == 'all'
                 Parol.destroy_all
@@ -101,6 +95,16 @@ module Parol
                 $config['color'] = 'on'
             else
                 $config['color'] = 'off'
+            end
+            Config.save $config.to_yaml
+        end
+
+        desc 'password on/off', 'Save password <on> or <off>'
+        def password on_or_off
+            if on_or_off.downcase == 'on'
+                $config['password'] = $password
+            else
+                $config['password'] = 'off'
             end
             Config.save $config.to_yaml
         end

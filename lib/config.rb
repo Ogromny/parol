@@ -10,6 +10,7 @@ module Parol
             if File.exist? @@config_filename
                 YAML.load_file @@config_filename 
             else
+
                 nil
             end
         end
