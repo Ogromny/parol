@@ -21,7 +21,8 @@ module Parol
 
         if ActiveRecord::Base.connection.data_sources.include? 'parols'
 
-            if !$config.nil? && $config != "" && $config['password'] && $config['password'].length == 32
+
+            if !$config.nil? && $config['password'] && $config['password'].length == 32
                 $password = $config['password']
             else
                 while $password.length != 32
