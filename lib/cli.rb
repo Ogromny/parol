@@ -138,5 +138,11 @@ module Parol
                 system "xdg-open #{link}"
             end
         end
+
+        desc 'backup_database', 'Make a backup of the database.'
+        def backup_database
+            FileUtils.copy ENV['HOME'] + '/.config/parol/parol.sqlite3', ENV['HOME'] + '/.config/parol/parol.backup.sqlite3'
+            puts 'Backup to: ', ENV['HOME'] + '/.config/parol/parol.backup.sqlite3'
+        end
     end
 end
