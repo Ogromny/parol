@@ -4,6 +4,8 @@ An encrypted password manager (NaCl, libsodium) in CLI with Ruby
 ### Installation
 
 ```sh
+git clone https://github.com/Ogromny/parol.git
+cd parol/
 gem build parol.gemspec
 gem install parol-x.x.x.gem
 ```
