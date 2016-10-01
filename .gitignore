@@ -1,8 +1,2 @@
-# Parol database
-parol.sqlite3
-
-# Gem
-*.gem
-
 # Intellij
 .idea
