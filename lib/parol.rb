@@ -13,15 +13,9 @@ module Parol
 
             data = Database.decrypt
 
-            data <<
-                {
-                    app: app,
-                    login: login,
-                    password: password,
-                    comments: comments
-                }
+            data << { app: app, login: login, password: password, comments: comments }
 
-            Database.encrypt data
+            Database.encrypt(data)
         end
 
         #[SkyzohKey] 1. Input the name of the app:
@@ -33,35 +27,30 @@ module Parol
         #[SkyzohKey] 5. Résumé du parol
         #[SkyzohKey] 6. Création + print l'id du parol
 
-        desc 'list <id>', 'List a particular id, or everything if id is omitted.'
-        def list(id = nil)
-            data = Database.decrypt
-
-            # no id is transmitted
-            if id.nil?
-                data.each_with_index do |information, index|
-                    say "[#{index}] #{information[:app]} -> #{information[:login]}"
+        desc 'list <index>', 'List a particular index, or everything if index is omitted.'
+        def list(index = nil)
+            if ! index.nil? # index is not nil
+                index = Integer index rescue abort('please enter a number !')
+                information = Database.decrypt[index] || abort('index does not exists !')
+                say "[#{index}] #{information[:app]} -> #{information[:login]} : #{information[:password]} \t(#{information[:comments]})"
+            else # list all
+                Database.decrypt.each_with_index do |information, index|
+                    say "[#{index}]" + information[:app] + ' -> ' + information[:login]
                 end
-            # id exist
-            elsif ! data[id.to_i].nil?
-                id = id.to_i
-                say "[#{id}] #{data[id][:app]} -> #{data[id][:login]} : #{data[id][:password]} (#{data[id][:comments]})"
-            # id does not exist
-            else
-                say 'id does not exist!'
             end
         end
 
-        desc 'delete <id>', 'Delete a particular id.'
-        def delete(id)
+        desc 'delete <index>', 'Delete a particular index.'
+        def delete(index)
+            index = Integer index rescue abort('index does not exists !')
+
             data = Database.decrypt
 
-            # id exist
-            unless data.nil? && ! data[id.to_i].nil?
-                data.delete_at id.to_i
-            end
+            data[index] || abort('index does not exists !')
 
-            Database.encrypt data
+            data.delete_at(index)
+
+            Database.encrypt(data)
         end
 
     end
