@@ -1,15 +1,32 @@
 require_relative 'database'
 require 'thor'
+require 'orpg'
 
 module Parol
     class Command < Thor
 
         desc 'create', 'Create a new account.'
         def create
-            app      = ask('App (or URL):')
-            login    = ask('Login:')
-            password = ask('Password:')
-            comments = ask('Comments:')
+            app      = ask('1. Input the name of the app/url:')
+            login    = ask('2. Input the login you use on this app/url:')
+            password = yes?('3. Would you like parol to generate a strong random password for you ? [y/n]')
+
+            if password
+                password = ORPG::ORPG.generate(16, {number: true, lowercase: true, uppercase: true, special: true})
+                say("pass = #{password}")
+            else
+                password = ask('3.1. Input the password related to this account:')
+            end
+
+            comments = yes?('4. Some notes about this account ? [y/n]')
+
+            if comments
+                comments = ask('notes:')
+            else
+                comments = ''
+            end
+
+            say("app: #{app}\nlogin: #{login}\npassword: #{password}\nnotes: #{comments}")
 
             data = Database.decrypt
 
@@ -17,15 +34,6 @@ module Parol
 
             Database.encrypt(data)
         end
-
-        #[SkyzohKey] 1. Input the name of the app:
-        #[SkyzohKey] 2. Input the login you use on this app
-        #[SkyzohKey] 3. Would you like parol to generate a strong random password for you ? [Y/n]
-        #[SkyzohKey] if Y → pass = random de 32
-        #[SkyzohKey] if n → 3.1. Input the password related to this account:
-        #[SkyzohKey] 4. Some notes about this account ?
-        #[SkyzohKey] 5. Résumé du parol
-        #[SkyzohKey] 6. Création + print l'id du parol
 
         desc 'list <index>', 'List a particular index, or everything if index is omitted.'
         def list(index = nil)
