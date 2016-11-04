@@ -4,17 +4,17 @@ module Parol
 
     # noinspection RubyResolve
     class Database
-        # Executed once, permits to authenticate the actions done then this.
 
-        # Ask for the password of the database
-        puts 'Database password:'
-        @@password = STDIN.gets.chomp
-        abort('Password must be 32 of length') unless @@password.length == 32
-
-        ## The box that will be used to encrypt and decrypt the database
-        @@box = RbNaCl::SimpleBox.from_secret_key(String.new(@@password, encoding: 'BINARY'))
         ## The path to the database
         @@database = "#{ENV['HOME']}/.config/parol/data"
+
+        ## set +password+
+        def self.password=(password)
+            abort('Password must be 32 of length') unless password.length == 32
+
+            ## The box that will be used to encrypt and decrypt the database
+            @@box = RbNaCl::SimpleBox.from_secret_key(String.new(password, encoding: 'BINARY'))
+        end
 
         ## Create an empty database
         def self.create
@@ -28,9 +28,17 @@ module Parol
             Marshal.load @@box.decrypt(File.binread(@@database)) rescue abort 'Invalid database password !'
         end
 
-        # Encrypt data and write it to the database
-        def self.encrypt data
+        ## Encrypt +data+ and write it to the database
+        def self.encrypt(data)
             File.open(@@database, 'wb') { |f| f.write @@box.encrypt(Marshal.dump(data)) }
+        end
+
+        ## Remove account +index+ from the database
+        def self.remove(index)
+            index = Integer(index) rescue abort('index does not exists !')
+            data = decrypt
+            abort('index does not exists !') if data.delete_at(index).nil?
+            Database.encrypt(data)
         end
 
     end

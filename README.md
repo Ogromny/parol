@@ -2,7 +2,6 @@
 An encrypted password manager (NaCl, libsodium) in CLI with Ruby
 
 ### Installation
-
 ```sh
 git clone https://github.com/Ogromny/parol.git
 cd parol/
@@ -14,12 +13,6 @@ gem install parol-x.x.x.gem
 ```sh
 parol
 ```
-
-### Screenshot
-![screenshot](https://raw.githubusercontent.com/Ogromny/parol/pepel/ressource/1.png)
-![screenshot](https://raw.githubusercontent.com/Ogromny/parol/pepel/ressource/2.png)
-![screenshot](https://raw.githubusercontent.com/Ogromny/parol/pepel/ressource/3.png)
-![screenshot](https://raw.githubusercontent.com/Ogromny/parol/pepel/ressource/4.png)
 
 ### Contact
 > in French or English

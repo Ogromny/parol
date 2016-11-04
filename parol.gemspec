@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
     s.name        = 'parol'
-    s.version     = '3.3.0'
-    s.date        = '2016-10-18'
+    s.version     = '3.4.0'
+    s.date        = '2016-11-04'
     s.summary     = 'parol'
     s.description = 'A simple and secure CLI password manager'
     s.authors     = ['Ogromny']
