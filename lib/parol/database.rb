@@ -49,7 +49,7 @@ module Parol
       encrypt data
     end
 
-    def each &block
+    def accounts &block
       unless block_given?
         return
       end
