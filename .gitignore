@@ -1,4 +1,4 @@
-# Intellij
 .idea
 *.iml
 *.lock
+bin/

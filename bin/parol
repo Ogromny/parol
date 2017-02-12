@@ -1,57 +1,54 @@
 #!/usr/bin/env ruby
-require 'database'
+require 'parol'
 require 'thor'
 require 'orpg'
 
-module Parol
-    class Command < Thor
+class Command < Thor
+  # puts 'Database password:'
+  # password = STDIN.gets.chomp
+  @data = Parol::Database.new "#{ENV['HOME']}/.config/parol/data", 'rL8CQ3C9pMBfDn9epQyjX6nNycKP3ZGh'
 
-        # executed once
-        puts 'Database password:'
-        Database.password = STDIN.gets.chomp
+  desc 'create', 'Create a new account.'
+  def create
+    program  = ask('1. Input the name of the program:')
+    login    = ask('2. Input the login:')
+    password = yes?('3. Would you like parol to generate a strong password for you ? [y/n]')
+    password = if password
+                 ORPG::ORPG.generate 16, lowercase: true, uppercase: true, number: true, special: true
+               else
+                 ask('3.1 INput the password:')
+               end
+    notes = yes?('4. Some notes about this account ? [y/n]')
+    notes = if notes
+                 ask('4.1. Some notes:')
+               else
+                 ''
+               end
+    say "program : #{program}"
+    say "login   : #{login}"
+    say "password: #{password}"
+    say "notes   : #{notes}"
 
-        desc 'create', 'Create a new account.'
-        def create
-            app      = ask('1. Input the name of the app/url:')
-            login    = ask('2. Input the login you use on this app/url:')
-            password = yes?('3. Would you like parol to generate a strong random password for you ? [y/n]')
-            password = password ? ORPG::ORPG.generate(16, {number: true, lowercase: true, uppercase: true, special: true}) : ask('3.1. Input the password related to this account:')
-            comments = yes?('4. Some notes about this account ? [y/n]')
-            comments = comments ? ask('4.1. Some notes:') : ''
+    @data.add program, login, password, notes
+  end
 
-            # Resume parol
-            say("app: #{app}\nlogin: #{login}\npassword: #{password}\nnotes: #{comments}")
-
-            data = Database.decrypt
-            data << { app: app, login: login, password: password, comments: comments }
-            Database.encrypt(data)
-        end
-
-        desc 'list <index>', 'List a particular index, or everything if index is omitted.'
-        def list(index = nil)
-            # index given
-            if ! index.nil?
-                index = Integer(index) rescue abort('please enter a number !')
-                information = Database.decrypt[index] || abort('index does not exists !')
-                say 'index: ' + index.to_s
-                say 'app:   ' + information[:app]
-                say 'login: ' + information[:login]
-                say 'notes: ' + information[:comments]
-
-            # index is'nt given, so list all
-            else
-                Database.decrypt.each_with_index do |information, index|
-                    say "[#{index}]" + information[:app] + ' -> ' + information[:login]
-                end
-            end
-        end
-
-        desc 'delete <index>', 'Delete a particular index.'
-        def delete(index)
-            Database.remove(index)
-        end
-
+  desc 'list <index>', 'List everything.'
+  def list index = nil
+    @data.each do |data|
+      say "[#{data[:program]} → #{data[:login]} :: #{data[:password]} (#{data[:notes]})]"
     end
+  end
 end
 
-Parol::Command.start(ARGV)
+#
+#         desc 'delete <index>', 'Delete a particular index.'
+#         def delete(index)
+#             Database.remove(index)
+#         end
+#
+#     end
+# end
+#
+# Parol::Command.start(ARGV)
+
+Command.start ARGV

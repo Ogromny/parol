@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'thor'
+# gem 'thor'
+# gem 'orpg'
 gem 'rbnacl-libsodium'
-gem 'orpg'
