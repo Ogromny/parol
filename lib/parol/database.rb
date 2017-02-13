@@ -44,6 +44,10 @@ module Parol
       end
     end
 
+    def save data
+      encrypt data
+    end
+
     private
     def decrypt
       unless File.exist? @database
