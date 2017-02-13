@@ -9,6 +9,12 @@ gem build parol.gemspec
 gem install parol-x.x.x.gem
 ```
 
+###### OR
+
+```sh
+gem install parol
+```
+
 ### Execute
 ```sh
 parol
